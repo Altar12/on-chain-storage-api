@@ -16,6 +16,11 @@ app.use(express.json());
 
 // route handlers
 app.get('/users', async (req, res) => {
+    const filePath = path.join(process.cwd(), idlFileName);
+    const idlString = await fs.readFile(filePath, 'utf-8');
+    const idlObject = JSON.parse(idlString);
+    res.send(idlObject);
+    return;
     try {
         const connection = new Connection(clusterApiUrl('devnet'));
         const accounts = await connection.getProgramAccounts(programId, {
@@ -147,8 +152,8 @@ async function getProgram(): Promise<Program> {
         const filePath = path.join(process.cwd(), idlFileName);
         console.log("cwd", process.cwd())
         console.log("path", filePath)
-        //const idlString = await fs.readFile(filePath, 'utf-8');
-        //const idlObject = JSON.parse(idlString);
+        const idlString = await fs.readFile(filePath, 'utf-8');
+        const idlObject = JSON.parse(idlString);
         const idl = await import(filePath);
         const connection = new Connection(clusterApiUrl('devnet'));
         const wallet = new Wallet(getPayer());

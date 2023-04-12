@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const anchor_1 = require("@project-serum/anchor");
 const dotenv_1 = __importDefault(require("dotenv"));
+const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, VersionedTransaction } = anchor_1.web3;
 // configs
@@ -50,6 +51,11 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // route handlers
 app.get('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const filePath = path_1.default.join(process.cwd(), idlFileName);
+    const idlString = yield fs_1.promises.readFile(filePath, 'utf-8');
+    const idlObject = JSON.parse(idlString);
+    res.send(idlObject);
+    return;
     try {
         const connection = new Connection(clusterApiUrl('devnet'));
         const accounts = yield connection.getProgramAccounts(programId, {
@@ -168,8 +174,8 @@ function getProgram() {
             const filePath = path_1.default.join(process.cwd(), idlFileName);
             console.log("cwd", process.cwd());
             console.log("path", filePath);
-            //const idlString = await fs.readFile(filePath, 'utf-8');
-            //const idlObject = JSON.parse(idlString);
+            const idlString = yield fs_1.promises.readFile(filePath, 'utf-8');
+            const idlObject = JSON.parse(idlString);
             const idl = yield (_a = filePath, Promise.resolve().then(() => __importStar(require(_a))));
             const connection = new Connection(clusterApiUrl('devnet'));
             const wallet = new anchor_1.Wallet(getPayer());
