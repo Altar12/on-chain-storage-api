@@ -1,6 +1,6 @@
 // imports
 import express from 'express';
-import { Program, Idl, AnchorProvider, web3, BN, Wallet } from '@project-serum/anchor';
+import { Program, AnchorProvider, web3, BN, Wallet } from '@project-serum/anchor';
 import dotenv from 'dotenv';
 import idl from './idl.json';
 const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, VersionedTransaction } = web3;
@@ -8,6 +8,8 @@ const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, Versi
 // configs
 dotenv.config();
 const programId = new PublicKey(idl.metadata.address);
+const idlString = JSON.stringify(idl);
+const idlObject = JSON.parse(idlString);
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
@@ -141,7 +143,7 @@ function getProgram(): Program {
     const connection = new Connection(clusterApiUrl('devnet'));
     const wallet = new Wallet(getPayer());
     const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
-    return new Program(idl as Idl, programId, provider);
+    return new Program(idlObject, programId, provider);
 }
 
 async function sendTransation(instructions: web3.TransactionInstruction[]): Promise<string> {

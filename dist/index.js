@@ -21,6 +21,8 @@ const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, Versi
 // configs
 dotenv_1.default.config();
 const programId = new PublicKey(idl_json_1.default.metadata.address);
+const idlString = JSON.stringify(idl_json_1.default);
+const idlObject = JSON.parse(idlString);
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -138,7 +140,7 @@ function getProgram() {
     const connection = new Connection(clusterApiUrl('devnet'));
     const wallet = new anchor_1.Wallet(getPayer());
     const provider = new anchor_1.AnchorProvider(connection, wallet, anchor_1.AnchorProvider.defaultOptions());
-    return new anchor_1.Program(idl_json_1.default, programId, provider);
+    return new anchor_1.Program(idlObject, programId, provider);
 }
 function sendTransation(instructions) {
     return __awaiter(this, void 0, void 0, function* () {
