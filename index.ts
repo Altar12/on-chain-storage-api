@@ -2,14 +2,13 @@
 import express from 'express';
 import { Program, AnchorProvider, web3, BN, Wallet } from '@project-serum/anchor';
 import dotenv from 'dotenv';
-import idl from './idl.json';
+import fs from 'fs';
 const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, VersionedTransaction } = web3;
 
 // configs
 dotenv.config();
-const programId = new PublicKey(idl.metadata.address);
-const idlString = JSON.stringify(idl);
-const idlObject = JSON.parse(idlString);
+const programId = new PublicKey('6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S');
+const idlPath = './idl.json';
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
@@ -140,10 +139,16 @@ function getPayer(): web3.Keypair {
 }
 
 function getProgram(): Program {
-    const connection = new Connection(clusterApiUrl('devnet'));
-    const wallet = new Wallet(getPayer());
-    const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
-    return new Program(idlObject, programId, provider);
+    try {
+        const idlString = fs.readFileSync(idlPath, 'utf-8');
+        const idlObject = JSON.parse(idlString);
+        const connection = new Connection(clusterApiUrl('devnet'));
+        const wallet = new Wallet(getPayer());
+        const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
+        return new Program(idlObject, programId, provider);
+    } catch (err) {
+        throw err;
+    }
 }
 
 async function sendTransation(instructions: web3.TransactionInstruction[]): Promise<string> {

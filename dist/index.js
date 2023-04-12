@@ -16,13 +16,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const anchor_1 = require("@project-serum/anchor");
 const dotenv_1 = __importDefault(require("dotenv"));
-const idl_json_1 = __importDefault(require("./idl.json"));
+const fs_1 = __importDefault(require("fs"));
 const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, VersionedTransaction } = anchor_1.web3;
 // configs
 dotenv_1.default.config();
-const programId = new PublicKey(idl_json_1.default.metadata.address);
-const idlString = JSON.stringify(idl_json_1.default);
-const idlObject = JSON.parse(idlString);
+const programId = new PublicKey('6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S');
+const idlPath = './idl.json';
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -137,10 +136,17 @@ function getPayer() {
     return Keypair.fromSecretKey(secretKey);
 }
 function getProgram() {
-    const connection = new Connection(clusterApiUrl('devnet'));
-    const wallet = new anchor_1.Wallet(getPayer());
-    const provider = new anchor_1.AnchorProvider(connection, wallet, anchor_1.AnchorProvider.defaultOptions());
-    return new anchor_1.Program(idlObject, programId, provider);
+    try {
+        const idlString = fs_1.default.readFileSync(idlPath, 'utf-8');
+        const idlObject = JSON.parse(idlString);
+        const connection = new Connection(clusterApiUrl('devnet'));
+        const wallet = new anchor_1.Wallet(getPayer());
+        const provider = new anchor_1.AnchorProvider(connection, wallet, anchor_1.AnchorProvider.defaultOptions());
+        return new anchor_1.Program(idlObject, programId, provider);
+    }
+    catch (err) {
+        throw err;
+    }
 }
 function sendTransation(instructions) {
     return __awaiter(this, void 0, void 0, function* () {
