@@ -20,7 +20,7 @@ app.get('/users', async (req, res) => {
     const idlString = await fs.readFile(filePath, 'utf-8');
     const idlObject = JSON.parse(idlString);
     const provider = new AnchorProvider(new Connection(clusterApiUrl('devnet')), new Wallet(getPayer()), AnchorProvider.defaultOptions())
-    const program = new Program(idlObject, programId, provider)
+    const program = new Program(JSON.parse(JSON.stringify(idlObject)), programId, provider)
     res.send(idlObject);
     return;
     try {
