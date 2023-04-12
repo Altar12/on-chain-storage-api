@@ -8,7 +8,7 @@ const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, Versi
 // configs
 dotenv.config();
 const programId = new PublicKey('6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S');
-const idlPath = './idl.json';
+const idlPath = 'idl.json';
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
