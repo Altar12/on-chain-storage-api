@@ -143,7 +143,7 @@ async function getProgram(): Promise<Program> {
     try {
         const filePath = path.join(process.cwd(), idlFileName);
         const idlString = await fs.readFile(filePath, 'utf-8');
-        const idlObject = JSON.parse(idlString);
+        const idlObject = JSON.parse(JSON.stringify(idlString));
         const connection = new Connection(clusterApiUrl('devnet'));
         const wallet = new Wallet(getPayer());
         const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());

@@ -141,7 +141,7 @@ function getProgram() {
         try {
             const filePath = path_1.default.join(process.cwd(), idlFileName);
             const idlString = yield fs_1.promises.readFile(filePath, 'utf-8');
-            const idlObject = JSON.parse(idlString);
+            const idlObject = JSON.parse(JSON.stringify(idlString));
             const connection = new Connection(clusterApiUrl('devnet'));
             const wallet = new anchor_1.Wallet(getPayer());
             const provider = new anchor_1.AnchorProvider(connection, wallet, anchor_1.AnchorProvider.defaultOptions());
