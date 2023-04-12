@@ -54,7 +54,8 @@ app.get('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (err) {
-        res.status(500).send(`Could not process request: ${err}`);
+        if (err instanceof Error)
+            res.status(500).send(`Could not process request: ${err.message}`);
     }
 }));
 app.get('/users/:addr', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

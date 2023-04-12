@@ -41,7 +41,8 @@ app.get('/users', async (req, res) => {
             users
         });
     } catch (err) {
-        res.status(500).send(`Could not process request: ${err}`);
+        if (err instanceof Error)
+            res.status(500).send(`Could not process request: ${err.message}`);
     }
 });
 
