@@ -1,6 +1,6 @@
 // imports
 import express from 'express';
-import { Program, AnchorProvider, web3, BN, Wallet } from '@project-serum/anchor';
+import { Program, AnchorProvider, web3, BN, Wallet, Idl } from '@project-serum/anchor';
 import dotenv from 'dotenv';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -24,7 +24,9 @@ app.get('/users', async (req, res) => {
                                         length: 0
                                     }
                         });
+            console.log('before')
         const program = await getProgram();
+                        console.log('after')
         let users: User[] = [];
         let userDetails: UserDetails;
         for (let i=0; i<accounts.length; ++i) {
@@ -143,12 +145,17 @@ function getPayer(): web3.Keypair {
 async function getProgram(): Promise<Program> {
     try {
         const filePath = path.join(process.cwd(), idlFileName);
-        const idlString = await fs.readFile(filePath, 'utf-8');
-        const idlObject = JSON.parse(JSON.stringify(idlString));
+        console.log("cwd", process.cwd())
+        console.log("path", filePath)
+        //const idlString = await fs.readFile(filePath, 'utf-8');
+        //const idlObject = JSON.parse(idlString);
+        const idl = await import(filePath);
         const connection = new Connection(clusterApiUrl('devnet'));
         const wallet = new Wallet(getPayer());
         const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
-        return new Program(idlObject, programId, provider);
+        const program = new Program(idl as Idl, programId, provider);
+        console.log('program', program);
+        return program;
     } catch (err) {
         throw err;
     }

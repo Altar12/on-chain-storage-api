@@ -1,86 +1,86 @@
-{
+[{
     "version": "0.1.0",
     "name": "simple_storage",
     "instructions": [
-        {
-            "name": "storeDetails",
-            "accounts": [
-                {
-                    "name": "payer",
-                    "isMut": true,
-                    "isSigner": true
-                },
-                {
-                    "name": "user",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "details",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "systemProgram",
-                    "isMut": false,
-                    "isSigner": false
-                }
-            ],
-            "args": [
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "age",
-                    "type": "u8"
-                },
-                {
-                    "name": "address",
-                    "type": "string"
-                }
-            ]
-        }
+      {
+        "name": "storeDetails",
+        "accounts": [
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "user",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "details",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "age",
+            "type": "u8"
+          },
+          {
+            "name": "address",
+            "type": "string"
+          }
+        ]
+      }
     ],
     "accounts": [
-        {
-            "name": "UserDetails",
-            "type": {
-                "kind": "struct",
-                "fields": [
-                    {
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "name": "age",
-                        "type": "u8"
-                    },
-                    {
-                        "name": "address",
-                        "type": "string"
-                    },
-                    {
-                        "name": "identity",
-                        "type": "publicKey"
-                    }
-                ]
+      {
+        "name": "UserDetails",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "age",
+              "type": "u8"
+            },
+            {
+              "name": "address",
+              "type": "string"
+            },
+            {
+              "name": "identity",
+              "type": "publicKey"
             }
+          ]
         }
+      }
     ],
     "errors": [
-        {
-            "code": 6000,
-            "name": "EmptyDetails",
-            "msg": "Name and address can not be empty strings"
-        },
-        {
-            "code": 6001,
-            "name": "MaxLengthExceeded",
-            "msg": "Name or address exceeds the maximum allowed length"
-        }
+      {
+        "code": 6000,
+        "name": "EmptyDetails",
+        "msg": "Name and address can not be empty strings"
+      },
+      {
+        "code": 6001,
+        "name": "MaxLengthExceeded",
+        "msg": "Name or address exceeds the maximum allowed length"
+      }
     ],
     "metadata": {
-        "address": "6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S"
+      "address": "6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S"
     }
-}
+  }]

@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,7 +39,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const anchor_1 = require("@project-serum/anchor");
 const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, VersionedTransaction } = anchor_1.web3;
 // configs
@@ -36,7 +58,9 @@ app.get('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 length: 0
             }
         });
+        console.log('before');
         const program = yield getProgram();
+        console.log('after');
         let users = [];
         let userDetails;
         for (let i = 0; i < accounts.length; ++i) {
@@ -139,14 +163,20 @@ function getPayer() {
 }
 function getProgram() {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             const filePath = path_1.default.join(process.cwd(), idlFileName);
-            const idlString = yield fs_1.promises.readFile(filePath, 'utf-8');
-            const idlObject = JSON.parse(JSON.stringify(idlString));
+            console.log("cwd", process.cwd());
+            console.log("path", filePath);
+            //const idlString = await fs.readFile(filePath, 'utf-8');
+            //const idlObject = JSON.parse(idlString);
+            const idl = yield (_a = filePath, Promise.resolve().then(() => __importStar(require(_a))));
             const connection = new Connection(clusterApiUrl('devnet'));
             const wallet = new anchor_1.Wallet(getPayer());
             const provider = new anchor_1.AnchorProvider(connection, wallet, anchor_1.AnchorProvider.defaultOptions());
-            return new anchor_1.Program(idlObject, programId, provider);
+            const program = new anchor_1.Program(idl, programId, provider);
+            console.log('program', program);
+            return program;
         }
         catch (err) {
             throw err;

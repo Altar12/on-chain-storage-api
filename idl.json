@@ -1,4 +1,4 @@
-{
+[{
   "version": "0.1.0",
   "name": "simple_storage",
   "instructions": [
@@ -83,4 +83,4 @@
   "metadata": {
     "address": "6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S"
   }
-}
+}]
