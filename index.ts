@@ -16,13 +16,6 @@ app.use(express.json());
 
 // route handlers
 app.get('/users', async (req, res) => {
-    const filePath = path.join(process.cwd(), idlFileName);
-    const idlString = await fs.readFile(filePath, 'utf-8');
-    const idlObject = JSON.parse(idlString);
-    const provider = new AnchorProvider(new Connection(clusterApiUrl('devnet')), new Wallet(getPayer()), AnchorProvider.defaultOptions())
-    const program = new Program(JSON.parse(JSON.stringify(idlObject)), programId, provider)
-    res.send(idlObject);
-    return;
     try {
         const connection = new Connection(clusterApiUrl('devnet'));
         const accounts = await connection.getProgramAccounts(programId, {
@@ -31,9 +24,7 @@ app.get('/users', async (req, res) => {
                                         length: 0
                                     }
                         });
-            console.log('before')
         const program = await getProgram();
-                        console.log('after')
         let users: User[] = [];
         let userDetails: UserDetails;
         for (let i=0; i<accounts.length; ++i) {
@@ -118,9 +109,6 @@ app.post('/users/:addr', async (req, res) => {
     } catch (err) {
         res.status(500).send(`Could not process request: ${err}`);
     }
-    // prepare instruction
-    // send transation
-    // send response
 });
 
 // server initiation
@@ -152,17 +140,13 @@ function getPayer(): web3.Keypair {
 async function getProgram(): Promise<Program> {
     try {
         const filePath = path.join(process.cwd(), idlFileName);
-        console.log("cwd", process.cwd())
-        console.log("path", filePath)
-        const idlString = await fs.readFile(filePath, 'utf-8');
-        const idlObject = JSON.parse(idlString);
         const idl = await import(filePath);
+        const idlString = JSON.stringify(idl);
+        const idlObject = JSON.parse(idlString);
         const connection = new Connection(clusterApiUrl('devnet'));
         const wallet = new Wallet(getPayer());
         const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
-        const program = new Program(idl as Idl, programId, provider);
-        console.log('program', program);
-        return program;
+        return new Program(idlObject, programId, provider);
     } catch (err) {
         throw err;
     }
