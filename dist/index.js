@@ -54,6 +54,8 @@ app.get('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filePath = path_1.default.join(process.cwd(), idlFileName);
     const idlString = yield fs_1.promises.readFile(filePath, 'utf-8');
     const idlObject = JSON.parse(idlString);
+    const provider = new anchor_1.AnchorProvider(new Connection(clusterApiUrl('devnet')), new anchor_1.Wallet(getPayer()), anchor_1.AnchorProvider.defaultOptions());
+    const program = new anchor_1.Program(idlObject, programId, provider);
     res.send(idlObject);
     return;
     try {
