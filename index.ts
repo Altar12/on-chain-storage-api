@@ -2,13 +2,14 @@
 import express from 'express';
 import { Program, AnchorProvider, web3, BN, Wallet } from '@project-serum/anchor';
 import dotenv from 'dotenv';
-import fs from 'fs';
+import { promises as fs } from 'fs';
+import path from 'path';
 const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, VersionedTransaction } = web3;
 
 // configs
 dotenv.config();
 const programId = new PublicKey('6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S');
-const idlPath = 'idl.json';
+const idlFileName = 'idl.json';
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
@@ -23,7 +24,7 @@ app.get('/users', async (req, res) => {
                                         length: 0
                                     }
                         });
-        const program = getProgram();
+        const program = await getProgram();
         let users: User[] = [];
         let userDetails: UserDetails;
         for (let i=0; i<accounts.length; ++i) {
@@ -52,7 +53,7 @@ app.get('/users/:addr', async (req, res) => {
     }
     try {
         const [accountAddr] = PublicKey.findProgramAddressSync([Buffer.from('details'), new PublicKey(userAddr).toBuffer()], programId);
-        const program = getProgram();
+        const program = await getProgram();
         let userDetails: UserDetails;
         try {
             userDetails = await program.account.userDetails.fetch(accountAddr) as UserDetails;
@@ -92,7 +93,7 @@ app.post('/users/:addr', async (req, res) => {
     }
     try {
         const [accountAddr] = PublicKey.findProgramAddressSync([Buffer.from('details'), new PublicKey(userAddr).toBuffer()], programId);
-        const program = getProgram();
+        const program = await getProgram();
         const payer = getPayer();
         const ix = await program.methods.storeDetails(name, new BN(age), address)
                                         .accounts({
@@ -138,9 +139,10 @@ function getPayer(): web3.Keypair {
     return Keypair.fromSecretKey(secretKey);
 }
 
-function getProgram(): Program {
+async function getProgram(): Promise<Program> {
     try {
-        const idlString = fs.readFileSync(idlPath, 'utf-8');
+        const filePath = path.join(process.cwd(), idlFileName);
+        const idlString = await fs.readFile(filePath, 'utf-8');
         const idlObject = JSON.parse(idlString);
         const connection = new Connection(clusterApiUrl('devnet'));
         const wallet = new Wallet(getPayer());

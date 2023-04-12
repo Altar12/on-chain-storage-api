@@ -16,12 +16,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const anchor_1 = require("@project-serum/anchor");
 const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
+const fs_1 = require("fs");
+const path_1 = __importDefault(require("path"));
 const { PublicKey, Connection, clusterApiUrl, Keypair, TransactionMessage, VersionedTransaction } = anchor_1.web3;
 // configs
 dotenv_1.default.config();
 const programId = new PublicKey('6DefpFdPkTfKUzjZrxN2kcsFfFv37DKimxdzAePhvp1S');
-const idlPath = 'idl.json';
+const idlFileName = 'idl.json';
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -35,7 +36,7 @@ app.get('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 length: 0
             }
         });
-        const program = getProgram();
+        const program = yield getProgram();
         let users = [];
         let userDetails;
         for (let i = 0; i < accounts.length; ++i) {
@@ -64,7 +65,7 @@ app.get('/users/:addr', (req, res) => __awaiter(void 0, void 0, void 0, function
     }
     try {
         const [accountAddr] = PublicKey.findProgramAddressSync([Buffer.from('details'), new PublicKey(userAddr).toBuffer()], programId);
-        const program = getProgram();
+        const program = yield getProgram();
         let userDetails;
         try {
             userDetails = (yield program.account.userDetails.fetch(accountAddr));
@@ -105,7 +106,7 @@ app.post('/users/:addr', (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     try {
         const [accountAddr] = PublicKey.findProgramAddressSync([Buffer.from('details'), new PublicKey(userAddr).toBuffer()], programId);
-        const program = getProgram();
+        const program = yield getProgram();
         const payer = getPayer();
         const ix = yield program.methods.storeDetails(name, new anchor_1.BN(age), address)
             .accounts({
@@ -136,17 +137,20 @@ function getPayer() {
     return Keypair.fromSecretKey(secretKey);
 }
 function getProgram() {
-    try {
-        const idlString = fs_1.default.readFileSync(idlPath, 'utf-8');
-        const idlObject = JSON.parse(idlString);
-        const connection = new Connection(clusterApiUrl('devnet'));
-        const wallet = new anchor_1.Wallet(getPayer());
-        const provider = new anchor_1.AnchorProvider(connection, wallet, anchor_1.AnchorProvider.defaultOptions());
-        return new anchor_1.Program(idlObject, programId, provider);
-    }
-    catch (err) {
-        throw err;
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const filePath = path_1.default.join(process.cwd(), idlFileName);
+            const idlString = yield fs_1.promises.readFile(filePath, 'utf-8');
+            const idlObject = JSON.parse(idlString);
+            const connection = new Connection(clusterApiUrl('devnet'));
+            const wallet = new anchor_1.Wallet(getPayer());
+            const provider = new anchor_1.AnchorProvider(connection, wallet, anchor_1.AnchorProvider.defaultOptions());
+            return new anchor_1.Program(idlObject, programId, provider);
+        }
+        catch (err) {
+            throw err;
+        }
+    });
 }
 function sendTransation(instructions) {
     return __awaiter(this, void 0, void 0, function* () {
